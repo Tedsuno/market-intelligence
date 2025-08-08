@@ -6,10 +6,10 @@ from wttj_scraper import WTTJScraper
 scraper = WTTJScraper()
 url = "https://www.welcometothejungle.com/fr/jobs?query=python"
 
+
 try:
-    jobs = scraper.scrape_multiple_pages(url, 15)
-    scraper.save_to_database(jobs)
-    print("SAUVEGARDE TERMINE")
+    print("Suppression de la colonne salary...")
+    scraper.drop_salary_column()
     
 finally:
     scraper.close()

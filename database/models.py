@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, create_engine
+from sqlalchemy import Column, Integer, String, DateTime, create_engine,Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -13,4 +13,6 @@ class Job(Base):
     location = Column(String(255))
     url = Column(String(255))
     source = Column(String(255))
-    scraped_at = Column(DateTime)                    
+    scraped_at = Column(DateTime)
+    salary_min= Column(Float) 
+    salary_max= Column(Float)       

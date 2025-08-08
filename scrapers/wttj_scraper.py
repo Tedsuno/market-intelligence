@@ -10,6 +10,7 @@ sys.path.append('..')
 import time
 from database.connection import get_db
 from database.models import Job
+from wttj_salary_cleaner import *
 
 class WTTJScraper():
     
@@ -51,11 +52,22 @@ class WTTJScraper():
                 lien_elem = job.find('a', class_='sc-gSmbis fNmfaI')
                 lien = lien_elem.get('href') if lien_elem else "N/A"
                 
+                salary_elem = job.find('span', class_="sc-brzPDJ kVqhOm")
+                if salary_elem and "Salaire" in salary_elem.get_text():
+                    parent_text = salary_elem.parent.get_text()
+                    salary = parent_text.replace("Salaire :", "").strip()
+                else:
+                    salary = "N/A"
+                parse = parse_salary(salary)
+                
                 infos = {
                     "title": title,
                     "entreprise": entreprise,
                     "location": location,
-                    "lien": lien
+                    "lien": lien,
+                    "salary_min" : convert_to_annual(parse["salary_min"]) ,
+                    "salary_max" : convert_to_annual(parse["salary_max"])
+                    
                 }
                 res.append(infos)
             except Exception as e:
@@ -88,13 +100,28 @@ class WTTJScraper():
                 new_job.url = offer["lien"]
                 new_job.source="WTTJ"
                 new_job.scraped_at=datetime.now()
+                new_job.salary_min=offer["salary_min"]
+                new_job.salary_max=offer["salary_max"]
                 db.add(new_job)
                 db.commit()
             except Exception as e:
                 print(f"Erreur lors de la sauvegarde: {e}")
-                db.session.rollback()
+                db.rollback()
         db.close() 
     
     def close(self):
         if self.driver:
             self.driver.quit()
+            
+    def clear_database(self):
+        db = get_db()
+        try:
+            # Supprime tous les enregistrements de la table jobs
+            db.query(Job).delete()
+            db.commit()
+            print("Table jobs vidée avec succès")
+        except Exception as e:
+            print(f"Erreur lors du vidage de la table: {e}")
+            db.rollback()
+        finally:
+            db.close()
