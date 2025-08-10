@@ -2,6 +2,9 @@
     "python.analysis.extraPaths": [
         "./database",
         "./config",
+        "./scrapers",
+        "./scrapers",
+        "./scrapers",
         "./scrapers"
     ]
 }

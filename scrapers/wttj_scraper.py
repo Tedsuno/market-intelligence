@@ -11,6 +11,9 @@ import time
 from database.connection import get_db
 from database.models import Job
 from wttj_salary_cleaner import *
+from wttj_skills_extractors import *
+from wttj_location_analyzer import *
+from wttj_seniority import *
 
 class WTTJScraper():
     
@@ -60,14 +63,36 @@ class WTTJScraper():
                     salary = "N/A"
                 parse = parse_salary(salary)
                 
+                skills = extract_skills_from_title(title)
+                
+                locations=process_location(location)
+                
+                contract_elem = job.find('div', class_='sc-fibHhp gqJNlp')
+                if contract_elem:
+                    contract_text = contract_elem.get_text(strip=True)
+                    contract = contract_text if contract_text else "N/A"
+                else:
+                    contract = "N/A"
+                
+                seniority = exctract_seniority_from_title(title)
+                if seniority == "N/A" :
+                    seniority = exctract_seniority_from_salary(parse["salary_min"])
+                
+                
                 infos = {
                     "title": title,
                     "entreprise": entreprise,
-                    "location": location,
+                    "location": locations["clean_location"],
                     "lien": lien,
                     "salary_min" : convert_to_annual(parse["salary_min"]) ,
-                    "salary_max" : convert_to_annual(parse["salary_max"])
-                    
+                    "salary_max" : convert_to_annual(parse["salary_max"]),
+                    "skills" : skills,
+                    "is_remote" : locations["is_remote"],
+                    "latitude" :  locations["latitude"] ,
+                    "longitude" :  locations["longitude"] ,
+                    "geocoding_quality" : locations["quality"],
+                    "contract" : contract,
+                    "seniority" : seniority
                 }
                 res.append(infos)
             except Exception as e:
@@ -102,6 +127,13 @@ class WTTJScraper():
                 new_job.scraped_at=datetime.now()
                 new_job.salary_min=offer["salary_min"]
                 new_job.salary_max=offer["salary_max"]
+                new_job.skills=offer["skills"]
+                new_job.latitude=offer["latitude"]
+                new_job.longitude=offer["longitude"]
+                new_job.is_remote=offer["is_remote"]
+                new_job.geocoding_quality=offer["geocoding_quality"]
+                new_job.contract_type=offer["contract"]
+                new_job.seniority=offer["seniority"]
                 db.add(new_job)
                 db.commit()
             except Exception as e:
@@ -116,7 +148,6 @@ class WTTJScraper():
     def clear_database(self):
         db = get_db()
         try:
-            # Supprime tous les enregistrements de la table jobs
             db.query(Job).delete()
             db.commit()
             print("Table jobs vidée avec succès")

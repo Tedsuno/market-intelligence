@@ -8,8 +8,13 @@ url = "https://www.welcometothejungle.com/fr/jobs?query=python"
 
 
 try:
-    print("Suppression de la colonne salary...")
-    scraper.drop_salary_column()
+    print("Vidage de la table...")
+    scraper.clear_database()
+    print("Table vidée !")
+    
+    jobs = scraper.scrape_multiple_pages(url, 15)
+    scraper.save_to_database(jobs)
+    print("SAUVEGARDE TERMINE")
     
 finally:
     scraper.close()

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, create_engine,Float
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, create_engine,Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -15,4 +15,11 @@ class Job(Base):
     source = Column(String(255))
     scraped_at = Column(DateTime)
     salary_min= Column(Float) 
-    salary_max= Column(Float)       
+    salary_max= Column(Float)  
+    skills= Column(String(255)) 
+    latitude = Column(Float)
+    longitude = Column(Float)
+    is_remote = Column(Boolean, default=False)
+    geocoding_quality = Column(String(20)) 
+    contract_type = Column(String(255))
+    seniority = Column(String(255))
