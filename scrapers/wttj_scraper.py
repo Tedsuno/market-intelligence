@@ -46,13 +46,23 @@ class WTTJScraper():
                 title_elem = job.find('h2', class_='sc-izXThL fnsHVh wui-text')
                 title = title_elem.get_text(strip=True) if title_elem else "N/A"
                 
-                entreprise_elem = job.find('span', class_='sc-izXThL fFdRYJ sc-dQnwSX iNIwQv wui-text')
+                entreprise_elem = job.find('span', class_='sc-izXThL fFdRYJ sc-fxgerm ZAtaP wui-text')
+                if not entreprise_elem:
+                    entreprise_elem = job.find('span', string=lambda x: x and len(x.strip()) > 2)
+                    if not entreprise_elem:
+                        entreprise_elem = job.find('div', class_=lambda x: x and any('company' in c.lower() for c in x))
                 entreprise = entreprise_elem.get_text(strip=True) if entreprise_elem else "N/A"
                 
-                location_elem = job.find('span', class_='sc-raRIu jtcPcm')
+                location_elem = job.find('span', class_='sc-gFGBys sdDDd')
+                if not location_elem:
+                    location_elem = job.find('span', string=lambda x: x and any(city in x for city in ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Lille', 'Bordeaux', 'Nantes', 'Strasbourg', 'Montpellier', 'Rennes']))
+                    if not location_elem:
+                        location_elem = job.find('span', string=lambda x: x and any(char.isdigit() for char in x) and len(x) < 50)
                 location = location_elem.get_text(strip=True) if location_elem else "N/A"
                 
-                lien_elem = job.find('a', class_='sc-gSmbis fNmfaI')
+                lien_elem = job.find('a', href=lambda x: x and '/jobs/' in x)
+                if not lien_elem:
+                    lien_elem = job.find('a', {'role': 'link'})
                 lien = lien_elem.get('href') if lien_elem else "N/A"
                 
                 salary_elem = job.find('span', class_="sc-brzPDJ kVqhOm")
@@ -63,9 +73,26 @@ class WTTJScraper():
                     salary = "N/A"
                 parse = parse_salary(salary)
                 
-                skills = extract_skills_from_title(title)
+                if lien != "N/A" and not lien.startswith('http'):
+                    lien = "https://www.welcometothejungle.com" + lien
+                    
+                if lien == "N/A":
+                    print(f"Pas de lien trouvé pour: {title}")
+                    continue
+                    
+                print(f"Traitement de: {title} - {lien}")
+                link = self.get_page_html(lien)
                 
-                locations=process_location(location)
+                if not link:
+                    print(f"Impossible de récupérer le contenu de: {lien}")
+                    continue
+                    
+                soup2 = BeautifulSoup(link, 'html.parser')
+                poste_elem = soup2.find('div', {'id': 'the-position-section'})
+                description = poste_elem.get_text(strip=True) if poste_elem else "N/A"
+                skills = extract_skills_from_title(description)
+                
+                locations = process_location(location)
                 
                 contract_elem = job.find('div', class_='sc-fibHhp gqJNlp')
                 if contract_elem:
@@ -75,26 +102,40 @@ class WTTJScraper():
                     contract = "N/A"
                 
                 seniority = exctract_seniority_from_title(title)
-                if seniority == "N/A" :
+                if seniority == "N/A":
                     seniority = exctract_seniority_from_salary(parse["salary_min"])
                 
+                is_remote = job.find('span', string=lambda t: t and "Télétravail" in t)
+                if is_remote:
+                    is_remote_text = is_remote.get_text(strip=True)
+                    if is_remote_text == "Télétravail fréquent" or \
+                    is_remote_text == "Télétravail occasionnel" or is_remote_text == "Télétravail total":
+                        is_remote = True
+                    else:
+                        is_remote = False
+                else:
+                    is_remote = False
                 
+                job_name = extract_name_from_title(title)
+                        
                 infos = {
                     "title": title,
                     "entreprise": entreprise,
                     "location": locations["clean_location"],
                     "lien": lien,
-                    "salary_min" : convert_to_annual(parse["salary_min"]) ,
-                    "salary_max" : convert_to_annual(parse["salary_max"]),
-                    "skills" : skills,
-                    "is_remote" : locations["is_remote"],
-                    "latitude" :  locations["latitude"] ,
-                    "longitude" :  locations["longitude"] ,
-                    "geocoding_quality" : locations["quality"],
-                    "contract" : contract,
-                    "seniority" : seniority
+                    "salary_min": convert_to_annual(parse["salary_min"]),
+                    "salary_max": convert_to_annual(parse["salary_max"]),
+                    "skills": skills,
+                    "is_remote": is_remote,
+                    "latitude": locations["latitude"],
+                    "longitude": locations["longitude"],
+                    "geocoding_quality": locations["quality"],
+                    "contract": contract,
+                    "seniority": seniority,
+                    "job_name": job_name
                 }
                 res.append(infos)
+                
             except Exception as e:
                 print(f"Erreur lors de l'extraction d'un job: {e}")
                 continue
@@ -134,6 +175,7 @@ class WTTJScraper():
                 new_job.geocoding_quality=offer["geocoding_quality"]
                 new_job.contract_type=offer["contract"]
                 new_job.seniority=offer["seniority"]
+                new_job.job_name=offer["job_name"]
                 db.add(new_job)
                 db.commit()
             except Exception as e:

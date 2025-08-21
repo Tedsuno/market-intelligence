@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from wttj_scraper import WTTJScraper
 
 scraper = WTTJScraper()
-url = "https://www.welcometothejungle.com/fr/jobs?query=python"
+url = "https://www.welcometothejungle.com/fr/jobs?query=data_stage"
 
 
 try:
@@ -12,7 +12,7 @@ try:
     scraper.clear_database()
     print("Table vidée !")
     
-    jobs = scraper.scrape_multiple_pages(url, 15)
+    jobs = scraper.scrape_multiple_pages(url, 3)
     scraper.save_to_database(jobs)
     print("SAUVEGARDE TERMINE")
     

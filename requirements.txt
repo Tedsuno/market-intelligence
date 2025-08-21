@@ -8,3 +8,5 @@ spacy
 selenium
 numpy
 matplotlib
+streamlit
+plotly

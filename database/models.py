@@ -23,3 +23,4 @@ class Job(Base):
     geocoding_quality = Column(String(20)) 
     contract_type = Column(String(255))
     seniority = Column(String(255))
+    job_name = Column(String(255))
