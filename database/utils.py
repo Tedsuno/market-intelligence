@@ -207,7 +207,7 @@ def render_footer():
     st.markdown("<br><hr>", unsafe_allow_html=True)
     st.markdown(
         "<div style='text-align: center; color: #666; padding: 20px;'>"
-        "TechJobs Intelligence Dashboard - Fait avec Streamlit"
+        "TechJobs Intelligence Dashboard"
         "</div>", 
         unsafe_allow_html=True
     )
