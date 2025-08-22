@@ -1,19 +1,12 @@
-# --- Core ---
-streamlit==1.36.0
-pandas==2.2.2
 numpy==1.26.4
+pandas==2.2.2
+streamlit==1.36.0
+plotly==5.22.0
 
-# --- Database ---
 SQLAlchemy==2.0.30
 psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 
-# --- Visualisation ---
-plotly==5.22.0
-
-# --- Scraping / parsing ---
 beautifulsoup4==4.12.3
 requests==2.32.2
-
-# --- Optionnel (si ton dashboard appelle vraiment le scraper) ---
-selenium==4.21.0
+# selenium==4.21.0   # (ne l’ajoute que si ton APP Streamlit lance vraiment le scraper)

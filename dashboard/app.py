@@ -32,7 +32,7 @@ def apply_filters(df):
 
         salary_range = st.slider(
             "Fourchette de salaire (€)", 
-            min_value=0, max_value=200000, value=(30000, 100000), step=5000
+            min_value=0, max_value=200000, value=(0, 100000), step=5000
         )
         remote_filter = st.radio("Type de travail", ["Tous", "Remote seulement", "Présentiel seulement"])
 
