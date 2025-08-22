@@ -112,6 +112,9 @@ streamlit run dashboard/app.py
 4. Pousser vers la branche (`git push origin feature/NouvelleFonctionnalite`)
 5. Ouvrir une Pull Request
 
+🛡️ **Disclaimer**  
+Les données utilisées dans ce projet proviennent de sources publiques et sont exploitées uniquement à des fins éducatives et de démonstration technique, dans le respect des conditions d’utilisation.
+
 ## Licence
 
 Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
