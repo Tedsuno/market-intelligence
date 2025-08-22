@@ -275,7 +275,7 @@ def main():
         with col2:
             render_skills_chart(df_filtered)
             
-        render_section_header("Heatmap Skills par Métier")
+        render_section_header("Heatmap Skills par Métier ")
         render_heatmap(df_filtered)
         
         render_section_header("Carte des offres en France")

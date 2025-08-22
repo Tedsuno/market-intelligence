@@ -53,7 +53,7 @@ class WTTJScraper():
                         entreprise_elem = job.find('div', class_=lambda x: x and any('company' in c.lower() for c in x))
                 entreprise = entreprise_elem.get_text(strip=True) if entreprise_elem else "N/A"
                 
-                location_elem = job.find('span', class_='sc-flttKd ifztaw')
+                location_elem = job.find('span', class_='sc-gFGBys sdDDd')
                 if not location_elem:
                     location_elem = job.find('span', string=lambda x: x and any(city in x for city in ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Lille', 'Bordeaux', 'Nantes', 'Strasbourg', 'Montpellier', 'Rennes']))
                     if not location_elem:
