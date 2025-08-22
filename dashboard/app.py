@@ -231,7 +231,7 @@ def render_heatmap(df):
         fig = px.imshow(
             matrix, 
             color_continuous_scale="Viridis",  
-            title="Heatmap Skills par Ville", 
+            title="Heatmap Skills par Métier", 
             text_auto=True,
             aspect="auto"
         )
