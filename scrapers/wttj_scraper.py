@@ -164,24 +164,25 @@ class WTTJScraper():
                 new_job.company = offer["entreprise"]
                 new_job.location = offer["location"]
                 new_job.url = offer["lien"]
-                new_job.source="WTTJ"
-                new_job.scraped_at=datetime.now()
-                new_job.salary_min=offer["salary_min"]
-                new_job.salary_max=offer["salary_max"]
-                new_job.skills=offer["skills"]
-                new_job.latitude=offer["latitude"]
-                new_job.longitude=offer["longitude"]
-                new_job.is_remote=offer["is_remote"]
-                new_job.geocoding_quality=offer["geocoding_quality"]
-                new_job.contract_type=offer["contract"]
-                new_job.seniority=offer["seniority"]
-                new_job.job_name=offer["job_name"]
+                new_job.source = "WTTJ"
+                new_job.scraped_at = datetime.now()
+                new_job.salary_min = offer["salary_min"]
+                new_job.salary_max = offer["salary_max"]
+                new_job.skills = str(offer["skills"])
+                new_job.latitude = offer["latitude"]
+                new_job.longitude = offer["longitude"]
+                new_job.is_remote = offer["is_remote"]
+                new_job.geocoding_quality = offer["geocoding_quality"]
+                new_job.contract_type = offer["contract"]
+                new_job.seniority = offer["seniority"]
+                new_job.job_name = offer["job_name"]
                 db.add(new_job)
                 db.commit()
             except Exception as e:
                 print(f"Erreur lors de la sauvegarde: {e}")
                 db.rollback()
-        db.close() 
+        db.close()
+
     
     def close(self):
         if self.driver:

@@ -4,13 +4,14 @@ from sqlalchemy import text
 import ast
 from .connection import get_db
 
-
 def get_jobs_from_database():
     db = get_db()
-    jobs = db.execute(text("SELECT * FROM Jobs;"))
-    rows = jobs.fetchall()
-    columns = jobs.keys()
-    return pd.DataFrame(rows, columns=columns)
+    try:
+        rows = db.execute(text("SELECT * FROM jobs;")).fetchall()
+        cols = db.execute(text("SELECT * FROM jobs LIMIT 0;")).keys()
+        return pd.DataFrame(rows, columns=cols)
+    finally:
+        db.close()
 
 
 
